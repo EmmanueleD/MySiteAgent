@@ -1,0 +1,191 @@
+---
+interface Props {
+  title?: string;
+  subtitle?: string;
+  phoneNumber?: string;
+  phoneLabel?: string;
+  buttonLabel?: string;
+  buttonHref?: string;
+}
+
+const {
+  title = "Pronti a iniziare?",
+  subtitle = "Contattaci per scoprire come possiamo aiutarti",
+  phoneNumber = "3514590525",
+  phoneLabel = "Chiama ora",
+  buttonLabel = "Invia un messaggio",
+  buttonHref = "#contact"
+} = Astro.props;
+---
+
+<section class="cta-section">
+  <div class="cta-container">
+    <div class="cta-content">
+      <h2 class="cta-title">{title}</h2>
+      <p class="cta-subtitle">{subtitle}</p>
+      
+      <div class="cta-actions">
+        <a href={`tel:${phoneNumber}`} class="cta-phone">
+          <span class="phone-icon">📱</span>
+          <span class="phone-info">
+            <span class="phone-label">{phoneLabel}</span>
+            <span class="phone-number">{phoneNumber}</span>
+          </span>
+        </a>
+        
+        <a href={buttonHref} class="cta-button">
+          {buttonLabel}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-section {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    padding: var(--space-4xl) var(--space-lg);
+    margin: var(--space-4xl) 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: "";
+    position: absolute;
+    top: calc(var(--space-4xl) * -3);
+    right: calc(var(--space-2xl) * -1);
+    width: var(--space-4xl);
+    height: var(--space-4xl);
+    background-color: var(--color-surface);
+    opacity: 0.1;
+    border-radius: var(--radius-full);
+    pointer-events: none;
+  }
+
+  .cta-container {
+    max-width: var(--space-3xl);
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .cta-content {
+    text-align: center;
+  }
+
+  .cta-title {
+    font-family: var(--font-display);
+    font-size: var(--text-4xl);
+    font-weight: var(--font-bold);
+    color: var(--color-surface);
+    margin: 0 0 var(--space-md) 0;
+    line-height: var(--leading-tight);
+  }
+
+  .cta-subtitle {
+    font-size: var(--text-lg);
+    color: var(--color-surface);
+    margin: 0 0 var(--space-3xl) 0;
+    line-height: var(--leading-relaxed);
+    opacity: 0.9;
+  }
+
+  .cta-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    align-items: center;
+  }
+
+  .cta-phone {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-md);
+    background: var(--color-surface);
+    color: var(--color-primary);
+    padding: var(--space-lg) var(--space-2xl);
+    border-radius: var(--radius-xl);
+    text-decoration: none;
+    font-weight: var(--font-semibold);
+    transition: all var(--transition-normal);
+    border: var(--border-thin) solid transparent;
+    box-shadow: var(--shadow-md);
+  }
+
+  .cta-phone:hover {
+    transform: translateY(calc(var(--space-xs) * -2));
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-primary);
+  }
+
+  .phone-icon {
+    font-size: var(--text-2xl);
+  }
+
+  .phone-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .phone-label {
+    display: block;
+    font-size: var(--text-sm);
+    opacity: 0.8;
+    font-weight: var(--font-normal);
+  }
+
+  .phone-number {
+    display: block;
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+  }
+
+  .cta-button {
+    display: inline-block;
+    background: var(--color-surface);
+    color: var(--color-primary);
+    padding: var(--space-lg) var(--space-3xl);
+    border-radius: var(--radius-xl);
+    text-decoration: none;
+    font-weight: var(--font-semibold);
+    font-size: var(--text-lg);
+    transition: all var(--transition-normal);
+    border: var(--border-thin) solid transparent;
+    box-shadow: var(--shadow-md);
+    opacity: 0.95;
+  }
+
+  .cta-button:hover {
+    transform: translateY(calc(var(--space-xs) * -2));
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-primary);
+    opacity: 1;
+  }
+
+  @media (min-width: 48rem) {
+    .cta-section {
+      padding: var(--space-4xl) var(--space-3xl);
+      margin: var(--space-4xl) var(--space-2xl);
+      border-radius: var(--radius-2xl);
+    }
+
+    .cta-title {
+      font-size: var(--text-5xl);
+      margin-bottom: var(--space-lg);
+    }
+
+    .cta-actions {
+      flex-direction: row;
+      justify-content: center;
+      gap: var(--space-2xl);
+      margin-top: var(--space-3xl);
+    }
+
+    .cta-phone,
+    .cta-button {
+      flex: 0 1 auto;
+    }
+  }
+</style>
