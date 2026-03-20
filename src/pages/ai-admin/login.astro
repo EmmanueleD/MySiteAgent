@@ -1,0 +1,84 @@
+---
+export const prerender = false;
+
+import Layout from '../../layouts/Layout.astro';
+import { createSession } from '../../lib/session.js';
+
+let errorMessage = '';
+let shouldRedirect = false;
+let redirectCookieValue = '';
+
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+  const password = formData.get('password');
+  const adminPassword = import.meta.env.ADMIN_PASSWORD as string | undefined;
+
+  if (
+    adminPassword &&
+    typeof password === 'string' &&
+    password === adminPassword
+  ) {
+    shouldRedirect = true;
+    redirectCookieValue = createSession(adminPassword);
+  } else {
+    errorMessage = 'Password errata. Riprova.';
+  }
+}
+
+if (shouldRedirect && redirectCookieValue) {
+  Astro.cookies.set('session', redirectCookieValue, {
+    httpOnly: true,
+    sameSite: 'strict',
+    path: '/',
+    secure: Boolean(import.meta.env.PROD),
+    maxAge: 8 * 60 * 60,
+  });
+  return Astro.redirect('/ai-admin', 302);
+}
+---
+
+<Layout title="Accesso — MySiteAgent">
+  <main class="min-h-screen bg-background flex items-center justify-center px-md">
+    <div class="w-full max-w-sm bg-surface rounded-lg shadow-md p-2xl">
+      <h1 class="text-2xl font-bold text-foreground mb-lg text-center">
+        Accesso amministratore
+      </h1>
+
+      {errorMessage && (
+        <div
+          class="bg-error text-background rounded-md px-md py-sm mb-lg text-sm font-medium"
+          role="alert"
+        >
+          {errorMessage}
+        </div>
+      )}
+
+      <form method="POST" action="/ai-admin/login">
+        <div class="mb-lg">
+          <label
+            for="password"
+            class="block text-sm font-medium text-foreground mb-sm"
+          >
+            Password
+          </label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            required
+            autocomplete="current-password"
+            class="w-full border border-border rounded-md px-md py-sm text-base text-foreground bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+            placeholder="Inserisci la password"
+          />
+        </div>
+
+        <button
+          type="submit"
+          class="w-full bg-primary text-background font-semibold rounded-md px-md py-sm text-base hover:opacity-90 transition-opacity"
+        >
+          Accedi
+        </button>
+      </form>
+    </div>
+  </main>
+</Layout>

@@ -1,0 +1,22 @@
+---
+import '../styles/tokens.css';
+
+interface Props {
+  title?: string;
+}
+
+const { title = 'MySiteAgent' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body class="bg-background text-foreground">
+    <slot />
+  </body>
+</html>

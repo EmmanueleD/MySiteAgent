@@ -1,0 +1,390 @@
+---
+export const prerender = false;
+
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Pannello AI — MySiteAgent">
+  <main class="min-h-screen bg-background px-md py-2xl">
+    <div class="max-w-2xl mx-auto">
+
+      <header class="mb-2xl">
+        <h1 class="text-3xl font-bold text-foreground mb-sm">
+          Pannello di amministrazione AI
+        </h1>
+        <p class="text-base text-muted">
+          Descrivi la modifica che vuoi apportare al sito e il sistema la applicherà automaticamente.
+        </p>
+      </header>
+
+      <form id="agent-form" class="bg-surface rounded-lg shadow-sm p-xl mb-xl">
+        <div class="mb-lg">
+          <label
+            for="request-input"
+            class="block text-sm font-semibold text-foreground mb-sm"
+          >
+            Descrivi la modifica da apportare
+          </label>
+          <textarea
+            id="request-input"
+            name="request"
+            rows="5"
+            required
+            class="w-full border border-border rounded-md px-md py-sm text-base text-foreground bg-background focus:outline-none focus:ring-2 focus:ring-primary resize-y"
+            placeholder="Es.: Aggiorna il titolo dell'hero con 'Benvenuto nel futuro' e aggiungi il sottotitolo 'La piattaforma AI per il tuo sito'."
+          ></textarea>
+        </div>
+
+        <button
+          id="submit-btn"
+          type="submit"
+          class="bg-primary text-background font-semibold rounded-md px-xl py-sm text-base hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Applica modifica
+        </button>
+      </form>
+
+      <!-- Loading -->
+      <div id="loading-section" class="hidden bg-surface rounded-lg shadow-sm p-xl mb-xl text-center">
+        <div class="flex items-center justify-center gap-md">
+          <svg class="animate-spin text-primary" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+          </svg>
+          <span class="text-base text-muted font-medium">Elaborazione in corso...</span>
+        </div>
+        <p class="text-sm text-muted mt-sm">
+          L'AI sta elaborando la tua richiesta. Potrebbe richiedere qualche istante.
+        </p>
+      </div>
+
+      <!-- PR Approval section (Phase 1) -->
+      <div id="pr-section" class="hidden bg-surface rounded-lg shadow-sm p-xl mb-xl border-l-4" style="border-color: var(--color-accent)">
+        <h2 class="text-xl font-semibold text-foreground mb-md">
+          Modifiche pronte per la revisione
+        </h2>
+        <p id="pr-summary" class="text-base text-foreground mb-lg"></p>
+
+        <div class="flex flex-col gap-sm mb-lg">
+          <a
+            id="pr-link"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-sm text-sm font-medium text-primary hover:underline"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+            </svg>
+            Visualizza Pull Request su GitHub
+          </a>
+          <a
+            id="preview-link"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-sm text-sm font-medium text-primary hover:underline"
+            style="display: none"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+            Anteprima delle modifiche
+          </a>
+          <p id="no-preview-note" class="hidden text-sm text-muted">
+            L'anteprima visiva sarà disponibile nella PR non appena il deploy si completa.
+          </p>
+        </div>
+
+        <div class="flex gap-md">
+          <button
+            id="approve-btn"
+            type="button"
+            class="bg-success text-background font-semibold rounded-md px-xl py-sm text-base hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Approva e pubblica
+          </button>
+          <button
+            id="cancel-btn"
+            type="button"
+            class="bg-surface border border-border text-foreground font-semibold rounded-md px-xl py-sm text-base hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Annulla
+          </button>
+        </div>
+      </div>
+
+      <!-- Local-only success (Phase 0 — GitHub not configured) -->
+      <div id="local-success-section" class="hidden bg-surface rounded-lg shadow-sm p-xl mb-xl border-l-4" style="border-color: var(--color-success)">
+        <h2 class="text-xl font-semibold text-success mb-md">
+          Modifica applicata in locale
+        </h2>
+        <p id="local-success-summary" class="text-base text-foreground mb-lg"></p>
+        <div id="files-modified-container" class="hidden">
+          <h3 class="text-sm font-semibold text-foreground mb-sm">File modificati:</h3>
+          <ul id="files-modified-list" class="list-disc list-inside text-sm text-muted space-y-xs"></ul>
+        </div>
+      </div>
+
+      <!-- Approved success -->
+      <div id="approved-section" class="hidden bg-surface rounded-lg shadow-sm p-xl mb-xl border-l-4" style="border-color: var(--color-success)">
+        <h2 class="text-xl font-semibold text-success mb-md">Modifiche pubblicate</h2>
+        <p class="text-base text-foreground">Le modifiche sono state approvate e pubblicate sul sito.</p>
+      </div>
+
+      <!-- Cancelled -->
+      <div id="cancelled-section" class="hidden bg-surface rounded-lg shadow-sm p-xl mb-xl border-l-4" style="border-color: var(--color-muted)">
+        <h2 class="text-xl font-semibold text-foreground mb-md">Richiesta annullata</h2>
+        <p class="text-base text-muted">La modifica è stata annullata. Nessuna modifica è stata pubblicata.</p>
+      </div>
+
+      <!-- Error -->
+      <div id="error-section" class="hidden bg-surface rounded-lg shadow-sm p-xl mb-xl border-l-4" style="border-color: var(--color-error)">
+        <h2 class="text-xl font-semibold text-error mb-md">
+          Si è verificato un errore
+        </h2>
+        <p id="error-message" class="text-base text-foreground whitespace-pre-wrap"></p>
+      </div>
+
+    </div>
+  </main>
+</Layout>
+
+<script>
+  // ---------------------------------------------------------------------------
+  // DOM refs
+  // ---------------------------------------------------------------------------
+  const form = document.getElementById('agent-form') as HTMLFormElement | null;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement | null;
+  const requestInput = document.getElementById('request-input') as HTMLTextAreaElement | null;
+  const loadingSection = document.getElementById('loading-section') as HTMLElement | null;
+  const prSection = document.getElementById('pr-section') as HTMLElement | null;
+  const prSummary = document.getElementById('pr-summary') as HTMLElement | null;
+  const prLink = document.getElementById('pr-link') as HTMLAnchorElement | null;
+  const previewLink = document.getElementById('preview-link') as HTMLAnchorElement | null;
+  const noPreviewNote = document.getElementById('no-preview-note') as HTMLElement | null;
+  const approveBtn = document.getElementById('approve-btn') as HTMLButtonElement | null;
+  const cancelBtn = document.getElementById('cancel-btn') as HTMLButtonElement | null;
+  const localSuccessSection = document.getElementById('local-success-section') as HTMLElement | null;
+  const localSuccessSummary = document.getElementById('local-success-summary') as HTMLElement | null;
+  const filesModifiedContainer = document.getElementById('files-modified-container') as HTMLElement | null;
+  const filesModifiedList = document.getElementById('files-modified-list') as HTMLElement | null;
+  const approvedSection = document.getElementById('approved-section') as HTMLElement | null;
+  const cancelledSection = document.getElementById('cancelled-section') as HTMLElement | null;
+  const errorSection = document.getElementById('error-section') as HTMLElement | null;
+  const errorMessage = document.getElementById('error-message') as HTMLElement | null;
+
+  // PR state stored between agent response and approve/cancel action
+  let currentPrNumber: number | null = null;
+  let currentBranch: string | null = null;
+  let currentPrTitle: string | null = null;
+  let currentIntent: string | null = null;
+
+  // ---------------------------------------------------------------------------
+  // Helpers
+  // ---------------------------------------------------------------------------
+  const allSections = [
+    loadingSection, prSection, localSuccessSection,
+    approvedSection, cancelledSection, errorSection,
+  ];
+
+  function hideAll(): void {
+    for (const s of allSections) s?.classList.add('hidden');
+  }
+
+  function show(el: HTMLElement | null): void {
+    el?.classList.remove('hidden');
+  }
+
+  function hide(el: HTMLElement | null): void {
+    el?.classList.add('hidden');
+  }
+
+  function setButtonsDisabled(disabled: boolean): void {
+    if (submitBtn) submitBtn.disabled = disabled;
+    if (approveBtn) approveBtn.disabled = disabled;
+    if (cancelBtn) cancelBtn.disabled = disabled;
+  }
+
+  function showError(msg: string): void {
+    hideAll();
+    if (errorMessage) errorMessage.textContent = msg;
+    show(errorSection);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Agent form submission
+  // ---------------------------------------------------------------------------
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const requestText = requestInput?.value?.trim();
+    if (!requestText) return;
+
+    setButtonsDisabled(true);
+    hideAll();
+    show(loadingSection);
+
+    interface AgentResponse {
+      success: boolean;
+      summary: string;
+      files_modified: string[];
+      errors: string[];
+      pr_url: string | null;
+      pr_number: number | null;
+      branch: string | null;
+      preview_url: string | null;
+    }
+
+    try {
+      const response = await fetch('/api/agent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ request: requestText }),
+      });
+
+      const data = await response.json() as AgentResponse;
+      hideAll();
+
+      if (!data.success) {
+        const errText = data.errors?.length
+          ? data.errors.join('\n')
+          : 'Si è verificato un errore sconosciuto. Riprova.';
+        showError(errText);
+        return;
+      }
+
+      if (data.pr_number && data.pr_url && data.branch) {
+        // Phase 1 — show PR approval UI
+        currentPrNumber = data.pr_number;
+        currentBranch = data.branch;
+        currentPrTitle = requestText.length > 70 ? requestText.substring(0, 67) + '...' : requestText;
+        currentIntent = requestText;
+
+        if (prSummary) prSummary.textContent = data.summary || '';
+        if (prLink) prLink.href = data.pr_url;
+
+        if (data.preview_url && previewLink) {
+          previewLink.href = data.preview_url;
+          previewLink.style.display = 'inline-flex';
+          hide(noPreviewNote);
+        } else {
+          if (previewLink) previewLink.style.display = 'none';
+          show(noPreviewNote);
+        }
+
+        show(prSection);
+      } else {
+        // Phase 0 — local write only
+        if (localSuccessSummary) {
+          localSuccessSummary.textContent = data.summary || 'Operazione completata con successo.';
+        }
+        if (data.files_modified?.length && filesModifiedList && filesModifiedContainer) {
+          filesModifiedList.innerHTML = '';
+          for (const file of data.files_modified) {
+            const li = document.createElement('li');
+            li.textContent = file;
+            filesModifiedList.appendChild(li);
+          }
+          show(filesModifiedContainer);
+        } else {
+          hide(filesModifiedContainer);
+        }
+        show(localSuccessSection);
+      }
+    } catch {
+      showError('Errore di rete: impossibile contattare il server. Verifica la connessione e riprova.');
+    } finally {
+      setButtonsDisabled(false);
+    }
+  });
+
+  // ---------------------------------------------------------------------------
+  // Approve
+  // ---------------------------------------------------------------------------
+  approveBtn?.addEventListener('click', async () => {
+    if (!currentPrNumber || !currentBranch) return;
+
+    setButtonsDisabled(true);
+    hideAll();
+    show(loadingSection);
+
+    interface PrActionResponse {
+      success: boolean;
+      message: string;
+      errors: string[];
+    }
+
+    try {
+      const response = await fetch('/api/pr-action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'approve',
+          pr_number: currentPrNumber,
+          branch: currentBranch,
+          pr_title: currentPrTitle,
+          intent: currentIntent,
+        }),
+      });
+
+      const data = await response.json() as PrActionResponse;
+      hideAll();
+
+      if (data.success) {
+        show(approvedSection);
+        currentPrNumber = null;
+        currentBranch = null;
+      } else {
+        showError(data.errors?.join('\n') || 'Errore durante l\'approvazione.');
+      }
+    } catch {
+      showError('Errore di rete durante l\'approvazione. Riprova.');
+    } finally {
+      setButtonsDisabled(false);
+    }
+  });
+
+  // ---------------------------------------------------------------------------
+  // Cancel
+  // ---------------------------------------------------------------------------
+  cancelBtn?.addEventListener('click', async () => {
+    if (!currentPrNumber || !currentBranch) return;
+
+    setButtonsDisabled(true);
+    hideAll();
+    show(loadingSection);
+
+    interface PrActionResponse {
+      success: boolean;
+      message: string;
+      errors: string[];
+    }
+
+    try {
+      const response = await fetch('/api/pr-action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'cancel',
+          pr_number: currentPrNumber,
+          branch: currentBranch,
+        }),
+      });
+
+      const data = await response.json() as PrActionResponse;
+      hideAll();
+
+      if (data.success) {
+        show(cancelledSection);
+        currentPrNumber = null;
+        currentBranch = null;
+      } else {
+        showError(data.errors?.join('\n') || 'Errore durante l\'annullamento.');
+      }
+    } catch {
+      showError('Errore di rete durante l\'annullamento. Riprova.');
+    } finally {
+      setButtonsDisabled(false);
+    }
+  });
+</script>

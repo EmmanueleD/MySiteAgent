@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "Bash(bash scripts/setup.sh --agent claude-code)",
+      "Bash(export PATH=\"$PATH:/home/emmanuele/.local/bin\")",
+      "Bash(engram setup:*)",
+      "mcp__plugin_engram_engram__mem_save",
+      "mcp__plugin_engram_engram__mem_search",
+      "mcp__plugin_engram_engram__mem_get_observation",
+      "Bash(sqlite3 ~/.engram/memory.db \".schema\" 2>/dev/null || echo \"DB not found or sqlite3 not available\")",
+      "Read(//home/emmanuele/.engram/**)",
+      "Bash(python3 -c \"import sqlite3; conn = sqlite3.connect\\(''/home/emmanuele/.engram/memory.db''\\); cursor = conn.cursor\\(\\); cursor.execute\\(\"\"SELECT sql FROM sqlite_master WHERE type IN \\(''table'',''index'',''trigger''\\) ORDER BY type\"\"\\); [print\\(row[0]\\) for row in cursor.fetchall\\(\\) if row[0]]\")",
+      "Bash(python3 -c \"\nimport sqlite3\nconn = sqlite3.connect\\('/home/emmanuele/.engram/engram.db'\\)\ncursor = conn.cursor\\(\\)\ncursor.execute\\(\\\\\"SELECT sql FROM sqlite_master WHERE type IN \\('table','index','trigger'\\) ORDER BY type\\\\\"\\)\nfor row in cursor.fetchall\\(\\):\n    if row[0]:\n        print\\(row[0]\\)\n        print\\(\\)\nconn.close\\(\\)\n\" 2>&1)",
+      "Bash(npm install:*)",
+      "Bash(npx astro:*)",
+      "Bash(npx vitest:*)",
+      "Bash(npm run:*)",
+      "Bash(npx --yes @gentleman-programming/engram --version)",
+      "WebSearch",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(ENGRAM_DB_PATH=~/.engram/engram.db npx tsx scripts/setup-engram-db.ts)",
+      "Bash(npm rebuild:*)",
+      "Bash(node:*)",
+      "Bash(ENGRAM_DB_PATH=~/.engram/engram.db npm run index-engram 2>&1)",
+      "Bash(curl -s -c /tmp/cookie.txt -b /tmp/cookie.txt -X POST http://localhost:4321/ai-admin/login -H \"Content-Type: application/x-www-form-urlencoded\" -d \"password=admin1234\" -D -)",
+      "Bash(curl -s -c /tmp/cookie.txt -b /tmp/cookie.txt http://localhost:4321/ai-admin -D -)",
+      "Bash(curl -s -c /tmp/cookie2.txt -b /tmp/cookie2.txt -X POST http://localhost:4321/ai-admin/login -H \"Content-Type: application/x-www-form-urlencoded\" -d \"password=admin1234\" -D -)",
+      "Bash(curl -s -c /tmp/cookie2.txt -b /tmp/cookie2.txt http://localhost:4321/ai-admin -D -)",
+      "Bash(curl -s -c /tmp/cookie3.txt -b /tmp/cookie3.txt -X POST http://localhost:4321/ai-admin/login -H \"Content-Type: application/x-www-form-urlencoded\" -d \"password=admin1234\" -D -)",
+      "Bash(curl -s -c /tmp/cookie3.txt -b /tmp/cookie3.txt http://localhost:4321/ai-admin -D -)"
+    ]
+  }
+}

@@ -1,0 +1,249 @@
+---
+interface CarouselItem {
+  image: string;
+  title?: string;
+  description?: string;
+}
+
+interface Props {
+  items: CarouselItem[];
+  autoplay?: boolean;
+  interval?: number;
+}
+
+const { items, autoplay = false, interval = 5000 } = Astro.props;
+---
+
+<div class="carousel" data-autoplay={autoplay} data-interval={interval}>
+  <div class="carousel-track">
+    {items.map((item, index) => (
+      <div class="carousel-slide" data-index={index}>
+        <img src={item.image} alt={item.title || `Slide ${index + 1}`} class="carousel-image" />
+        {(item.title || item.description) && (
+          <div class="carousel-content">
+            {item.title && <h3 class="carousel-title">{item.title}</h3>}
+            {item.description && <p class="carousel-description">{item.description}</p>}
+          </div>
+        )}
+      </div>
+    ))}
+  </div>
+  
+  <button type="button" class="carousel-btn carousel-btn-prev" aria-label="Slide precedente">
+    <svg class="carousel-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="15 18 9 12 15 6"></polyline>
+    </svg>
+  </button>
+  
+  <button type="button" class="carousel-btn carousel-btn-next" aria-label="Slide successiva">
+    <svg class="carousel-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </button>
+  
+  <div class="carousel-indicators">
+    {items.map((_, index) => (
+      <button
+        type="button"
+        class={`carousel-indicator ${index === 0 ? 'active' : ''}`}
+        data-slide={index}
+        aria-label={`Vai alla slide ${index + 1}`}
+      />
+    ))}
+  </div>
+</div>
+
+<style>
+  .carousel {
+    position: relative;
+    width: 100%;
+    max-width: 72rem;
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: var(--radius-xl);
+    background-color: var(--color-surface);
+  }
+
+  .carousel-track {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+  }
+
+  .carousel-slide {
+    min-width: 100%;
+    position: relative;
+  }
+
+  .carousel-image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+  }
+
+  .carousel-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: var(--space-lg);
+    background: linear-gradient(transparent, var(--color-foreground));
+    color: var(--color-background);
+  }
+
+  .carousel-title {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    margin: 0 0 var(--space-xs) 0;
+  }
+
+  .carousel-description {
+    font-size: var(--text-base);
+    margin: 0;
+    opacity: 0.9;
+  }
+
+  .carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: var(--color-background);
+    border: none;
+    border-radius: var(--radius-full);
+    width: var(--space-2xl);
+    height: var(--space-2xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    transition: background-color 0.2s ease;
+    z-index: 10;
+  }
+
+  .carousel-btn:hover {
+    background-color: var(--color-surface);
+  }
+
+  .carousel-btn-prev {
+    left: var(--space-md);
+  }
+
+  .carousel-btn-next {
+    right: var(--space-md);
+  }
+
+  .carousel-btn-icon {
+    width: var(--space-lg);
+    height: var(--space-lg);
+    color: var(--color-foreground);
+  }
+
+  .carousel-indicators {
+    position: absolute;
+    bottom: var(--space-md);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: var(--space-sm);
+    z-index: 10;
+  }
+
+  .carousel-indicator {
+    width: var(--space-sm);
+    height: var(--space-sm);
+    border-radius: var(--radius-full);
+    border: none;
+    background-color: var(--color-background);
+    opacity: 0.5;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+
+  .carousel-indicator:hover,
+  .carousel-indicator.active {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  function initCarousels() {
+    const carousels = document.querySelectorAll('.carousel');
+    
+    carousels.forEach((carousel) => {
+      const track = carousel.querySelector('.carousel-track') as HTMLElement;
+      const slides = carousel.querySelectorAll('.carousel-slide');
+      const prevBtn = carousel.querySelector('.carousel-btn-prev');
+      const nextBtn = carousel.querySelector('.carousel-btn-next');
+      const indicators = carousel.querySelectorAll('.carousel-indicator');
+      
+      let currentIndex = 0;
+      const totalSlides = slides.length;
+      const autoplay = carousel.getAttribute('data-autoplay') === 'true';
+      const interval = parseInt(carousel.getAttribute('data-interval') || '5000', 10);
+      let autoplayTimer: number | undefined;
+      
+      function goToSlide(index: number) {
+        if (index < 0) index = totalSlides - 1;
+        if (index >= totalSlides) index = 0;
+        
+        currentIndex = index;
+        track.style.transform = `translateX(-${currentIndex * 100}%)`;
+        
+        indicators.forEach((indicator, i) => {
+          indicator.classList.toggle('active', i === currentIndex);
+        });
+      }
+      
+      function nextSlide() {
+        goToSlide(currentIndex + 1);
+      }
+      
+      function prevSlide() {
+        goToSlide(currentIndex - 1);
+      }
+      
+      function startAutoplay() {
+        if (autoplay && !autoplayTimer) {
+          autoplayTimer = window.setInterval(nextSlide, interval);
+        }
+      }
+      
+      function stopAutoplay() {
+        if (autoplayTimer) {
+          clearInterval(autoplayTimer);
+          autoplayTimer = undefined;
+        }
+      }
+      
+      prevBtn?.addEventListener('click', () => {
+        stopAutoplay();
+        prevSlide();
+        startAutoplay();
+      });
+      
+      nextBtn?.addEventListener('click', () => {
+        stopAutoplay();
+        nextSlide();
+        startAutoplay();
+      });
+      
+      indicators.forEach((indicator, index) => {
+        indicator.addEventListener('click', () => {
+          stopAutoplay();
+          goToSlide(index);
+          startAutoplay();
+        });
+      });
+      
+      carousel.addEventListener('mouseenter', stopAutoplay);
+      carousel.addEventListener('mouseleave', startAutoplay);
+      
+      startAutoplay();
+    });
+  }
+  
+  document.addEventListener('DOMContentLoaded', initCarousels);
+  document.addEventListener('astro:page-load', initCarousels);
+</script>

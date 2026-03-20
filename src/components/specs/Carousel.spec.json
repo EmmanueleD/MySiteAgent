@@ -1,0 +1,30 @@
+{
+  "name": "Carousel",
+  "description": "Carosello di immagini o contenuti con navigazione manuale tramite frecce e indicatori",
+  "props": {
+    "items": {
+      "type": "array",
+      "required": true,
+      "description": "Array di oggetti con image (URL immagine), title (titolo opzionale), description (descrizione opzionale)"
+    },
+    "autoplay": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Abilita lo scorrimento automatico"
+    },
+    "interval": {
+      "type": "number",
+      "required": false,
+      "default": 5000,
+      "description": "Intervallo in millisecondi tra le slide se autoplay è attivo"
+    }
+  },
+  "slots": {},
+  "examples": [
+    {
+      "description": "Carosello base con immagini",
+      "code": "<Carousel items={[{image: '/img1.jpg', title: 'Slide 1'}, {image: '/img2.jpg', title: 'Slide 2'}]} />"
+    }
+  ]
+}
