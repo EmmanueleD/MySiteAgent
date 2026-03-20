@@ -1,212 +1,60 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Hero from "../components/Hero.astro";
+import Section from "../components/Section.astro";
+import Container from "../components/Container.astro";
+import Footer from "../components/Footer.astro";
 ---
 
 <Layout title="MySiteAgent">
   <Hero
     title="Benvenuto nel futuro"
-    subtitle="La piattaforma AI per il tuo sito"
+    subtitle="La piattaforma AI per gestire i contenuti del tuo sito Astro"
+    ctaLabel="Accedi all'Admin"
+    ctaHref="/ai-admin"
   />
-  <main class="max-w-3xl mx-auto px-md py-xl">
-    <p class="text-base text-muted leading-relaxed">
-      Accedi all'area di amministrazione per iniziare a modificare i contenuti
-      del sito.
-    </p>
-  </main>
 
-  <section class="pricing-section">
-    <div class="pricing-container">
-      <h2 class="pricing-title">I nostri piani</h2>
-      <p class="pricing-subtitle">Scegli il piano perfetto per le tue esigenze</p>
-      
-      <div class="pricing-grid">
-        <div class="pricing-card">
-          <h3 class="plan-name">Base</h3>
-          <div class="plan-price">
-            <span class="price-amount">Gratis</span>
-          </div>
-          <ul class="plan-features">
-            <li>1 sito web</li>
-            <li>5 GB di spazio</li>
-            <li>Supporto email</li>
-            <li>Certificato SSL</li>
-          </ul>
-          <button class="plan-button">Inizia ora</button>
-        </div>
+  <Section background="surface" padding="lg">
+    <Container maxWidth="md">
+      <p
+        style="font-size: var(--text-lg); color: var(--color-muted); line-height: var(--leading-relaxed); text-align: center; margin: 0;"
+      >
+        Modifica i contenuti del tuo sito con l'intelligenza artificiale.
+        Semplice, veloce e potente.
+      </p>
+    </Container>
+  </Section>
 
-        <div class="pricing-card featured">
-          <span class="featured-badge">Popolare</span>
-          <h3 class="plan-name">Pro</h3>
-          <div class="plan-price">
-            <span class="price-amount">€10</span>
-            <span class="price-period">/mese</span>
-          </div>
-          <ul class="plan-features">
-            <li>5 siti web</li>
-            <li>50 GB di spazio</li>
-            <li>Supporto prioritario</li>
-            <li>Certificato SSL</li>
-            <li>Analytics avanzati</li>
-          </ul>
-          <button class="plan-button featured-button">Inizia ora</button>
-        </div>
-
-        <div class="pricing-card">
-          <h3 class="plan-name">Enterprise</h3>
-          <div class="plan-price">
-            <span class="price-amount">€25</span>
-            <span class="price-period">/mese</span>
-          </div>
-          <ul class="plan-features">
-            <li>Siti illimitati</li>
-            <li>Spazio illimitato</li>
-            <li>Supporto dedicato 24/7</li>
-            <li>Certificato SSL</li>
-            <li>Analytics avanzati</li>
-            <li>API personalizzate</li>
-          </ul>
-          <button class="plan-button">Contattaci</button>
-        </div>
-      </div>
-    </div>
-  </section>
+  <Footer
+    siteName="MySiteAgent"
+    sections={[
+      {
+        title: "Prodotto",
+        links: [
+          { label: "Funzionalità", href: "/features" },
+          { label: "Prezzi", href: "/pricing" },
+          { label: "Documentazione", href: "/docs" }
+        ]
+      },
+      {
+        title: "Azienda",
+        links: [
+          { label: "Chi siamo", href: "/about" },
+          { label: "Blog", href: "/blog" },
+          { label: "Contatti", href: "/contact" }
+        ]
+      },
+      {
+        title: "Legale",
+        links: [
+          { label: "Privacy", href: "/privacy" },
+          { label: "Termini", href: "/terms" }
+        ]
+      }
+    ]}
+    socialLinks={[
+      { icon: "★", href: "https://github.com", label: "GitHub" },
+      { icon: "♥", href: "https://twitter.com", label: "Twitter" }
+    ]}
+  />
 </Layout>
-
-<style>
-  .pricing-section {
-    background-color: var(--color-surface);
-    padding: var(--space-3xl) var(--space-md);
-  }
-
-  .pricing-container {
-    max-width: 72rem;
-    margin: 0 auto;
-    text-align: center;
-  }
-
-  .pricing-title {
-    font-size: var(--text-3xl);
-    font-weight: var(--font-bold);
-    color: var(--color-foreground);
-    margin-bottom: var(--space-sm);
-  }
-
-  .pricing-subtitle {
-    font-size: var(--text-lg);
-    color: var(--color-muted);
-    margin-bottom: var(--space-2xl);
-  }
-
-  .pricing-grid {
-    display: grid;
-    grid-template-columns: repeat(1, 1fr);
-    gap: var(--space-lg);
-  }
-
-  @media (min-width: 48rem) {
-    .pricing-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-
-  .pricing-card {
-    background-color: var(--color-background);
-    border: solid var(--color-border);
-    border-width: thin;
-    border-radius: var(--radius-xl);
-    padding: var(--space-xl);
-    text-align: left;
-    position: relative;
-    box-shadow: var(--shadow-sm);
-    transition: box-shadow 0.2s ease;
-  }
-
-  .pricing-card:hover {
-    box-shadow: var(--shadow-lg);
-  }
-
-  .pricing-card.featured {
-    border-color: var(--color-primary);
-    box-shadow: var(--shadow-md);
-  }
-
-  .featured-badge {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: var(--color-primary);
-    color: var(--color-background);
-    font-size: var(--text-sm);
-    font-weight: var(--font-semibold);
-    padding: var(--space-xs) var(--space-md);
-    border-radius: var(--radius-full);
-  }
-
-  .plan-name {
-    font-size: var(--text-xl);
-    font-weight: var(--font-semibold);
-    color: var(--color-foreground);
-    margin-bottom: var(--space-md);
-  }
-
-  .plan-price {
-    margin-bottom: var(--space-lg);
-  }
-
-  .price-amount {
-    font-size: var(--text-4xl);
-    font-weight: var(--font-bold);
-    color: var(--color-foreground);
-  }
-
-  .price-period {
-    font-size: var(--text-base);
-    color: var(--color-muted);
-  }
-
-  .plan-features {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 var(--space-xl) 0;
-  }
-
-  .plan-features li {
-    padding: var(--space-sm) 0;
-    color: var(--color-muted);
-    font-size: var(--text-base);
-    border-bottom: thin solid var(--color-border);
-  }
-
-  .plan-features li:last-child {
-    border-bottom: none;
-  }
-
-  .plan-button {
-    width: 100%;
-    padding: var(--space-md) var(--space-lg);
-    font-size: var(--text-base);
-    font-weight: var(--font-semibold);
-    color: var(--color-primary);
-    background-color: var(--color-background);
-    border: thin solid var(--color-primary);
-    border-radius: var(--radius-lg);
-    cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease;
-  }
-
-  .plan-button:hover {
-    background-color: var(--color-primary);
-    color: var(--color-background);
-  }
-
-  .plan-button.featured-button {
-    background-color: var(--color-primary);
-    color: var(--color-background);
-  }
-
-  .plan-button.featured-button:hover {
-    background-color: var(--color-secondary);
-  }
-</style>
